@@ -64,74 +64,80 @@ class _HomePageState extends State<HomePage> {
         future: FirebaseGetData().categoryGetData(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return GridView.builder(
-              shrinkWrap: true,
-              itemCount: snapshot.data!.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 1,
-              ),
-              itemBuilder: (context, index) {
-                // var data = snapshot.data!.snapshot.children.elementAt(index);
-                var data = snapshot.data![index];
-                return InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) => ProductAddPage(
-                          categoryTitle: data.title,
-                          categoryID: data.id,
+            return StatefulBuilder(
+              builder: (context, setState) {
+                return GridView.builder(
+                  shrinkWrap: true,
+                  itemCount: snapshot.data!.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 1,
+                  ),
+                  itemBuilder: (context, index) {
+                    // var data = snapshot.data!.snapshot.children.elementAt(index);
+                    var data = snapshot.data![index];
+                    return InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => ProductAddPage(
+                              categoryTitle: data.title,
+                              categoryID: data.id,
+                            ),
+                          ),
+                        );
+                      },
+                      onDoubleTap: () {
+                        setState(() {
+                          FirebaseDatabase.instance
+                              .ref("Category")
+                              .child(data.title.toString().toLowerCase())
+                              .remove();
+                          FirebaseDatabase.instance
+                              .ref("Product")
+                              .child(data.title.toString())
+                              .remove();
+                          FirebaseStorage.instance
+                              .ref("Category")
+                              .child(
+                                "${categoryController.text}_${categoryIdController.text}",
+                              )
+                              .delete();
+                          FirebaseStorage.instance
+                              .ref("Product")
+                              .child(data.title.toString())
+                              .delete();
+                        });
+                      },
+                      child: Card(
+                        color: AllColors.primaryColor,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircleAvatar(
+                                radius: 30,
+                                backgroundImage: NetworkImage(
+                                  data.image.toString(),
+                                ),
+                              ),
+                              Text(
+                                "Category Name : ${data.title.toString()}",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                "Category ID : ${data.id.toString()}",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );
                   },
-                  onDoubleTap: () {
-                    setState(() {
-                      FirebaseDatabase.instance
-                          .ref("Category")
-                          .child(data.title.toString().toLowerCase())
-                          .remove();
-                      FirebaseDatabase.instance
-                          .ref("Product")
-                          .child(data.title.toString())
-                          .remove();
-                      FirebaseStorage.instance
-                          .ref("Category")
-                          .child(
-                            "${categoryController.text}_${categoryIdController.text}",
-                          )
-                          .delete();
-                      FirebaseStorage.instance
-                          .ref("Product")
-                          .child(data.title.toString())
-                          .delete();
-                    });
-                  },
-                  child: Card(
-                    color: AllColors.primaryColor,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                            radius: 30,
-                            backgroundImage: NetworkImage(
-                              data.image.toString(),
-                            ),
-                          ),
-                          Text(
-                            "Category Name : ${data.title.toString()}",
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            "Category ID : ${data.id.toString()}",
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
                 );
               },
             );

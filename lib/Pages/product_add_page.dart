@@ -83,59 +83,79 @@ class _ProductAddPageState extends State<ProductAddPage> {
         ),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return GridView.builder(
-              shrinkWrap: true,
-              itemCount: snapshot.data!.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
-                crossAxisSpacing: 1,
-                childAspectRatio: 0.8,
-              ),
-              itemBuilder: (context, index) {
-                // var data = snapshot.data!.snapshot.children.elementAt(index);
-                var data = snapshot.data![index];
-                return InkWell(
-                  onTap: () async {
-                    setState(() {
-                      FirebaseDatabase.instance
-                          .ref("Product")
-                          .child(widget.categoryTitle.toString())
-                          .child(data.id.toString())
-                          .remove();
-                    });
-                    await FirebaseStorage.instance
-                        .ref("Product")
-                        .child(data.id.toString())
-                        .delete();
-                  },
-                  child: Card(
-                    color: AllColors.primaryColor,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                            radius: 25,
-                            backgroundImage: NetworkImage(
-                              data.image.toString(),
+            return StatefulBuilder(
+              builder: (context, setState) {
+                return GridView.builder(
+                  shrinkWrap: true,
+                  itemCount: snapshot.data!.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 1,
+                    childAspectRatio: 0.5,
+                  ),
+                  itemBuilder: (context, index) {
+                    // var data = snapshot.data!.snapshot.children.elementAt(index);
+                    var data = snapshot.data![index];
+                    return InkWell(
+                      onTap: () async {
+                        setState(() {
+                          FirebaseDatabase.instance
+                              .ref("Product")
+                              .child(widget.categoryTitle.toString())
+                              .child(data.id.toString())
+                              .remove();
+                        });
+                        await FirebaseStorage.instance
+                            .ref("Product")
+                            .child(data.id.toString())
+                            .delete();
+                      },
+                      child: Card(
+                        color: AllColors.primaryColor,
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircleAvatar(
+                                  radius: 40,
+                                  backgroundImage: NetworkImage(
+                                    data.image.toString(),
+                                  ),
+                                ),
+                                Text(
+                                  "Name : ${data.title.toString()}",
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  "Price : ${data.price.toString()}",
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  "ID : ${data.id.toString()}",
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  "Color : ${data.color.toString()}",
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  "Size : ${data.size.toString()}",
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
                             ),
                           ),
-                          Text(
-                            "Name : ${data.title.toString()}",
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            "Price : ${data.price.toString()}",
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            "ID : ${data.id.toString()}",
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 );
               },
             );
@@ -287,7 +307,7 @@ class _ProductAddPageState extends State<ProductAddPage> {
                                   ),
                                 ),
                                 onPressed: () {
-                                  colorList.add(productSizeController.text);
+                                  sizeList.add(productSizeController.text);
                                   productSizeController.clear();
                                 },
                                 child: const Text(
