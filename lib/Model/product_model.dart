@@ -3,6 +3,7 @@
 class ProductModel {
   String? title;
   String? image;
+  String? about;
   int? quantity;
   var price;
 
@@ -14,6 +15,7 @@ class ProductModel {
   ProductModel({
     required this.title,
     required this.image,
+    required this.about,
     this.quantity,
     required this.price,
     required this.id,
@@ -26,6 +28,7 @@ class ProductModel {
     title = json['title'];
 
     image = json['image'];
+    about = json['about'];
     quantity = json['quantity'];
     price = json['price'];
     id = json['id'];
@@ -37,6 +40,7 @@ class ProductModel {
     final map = <String, dynamic>{};
     map['title'] = title;
     map['image'] = image;
+    map['about'] = about;
 
     map['quantity'] = quantity;
     map['price'] = price;

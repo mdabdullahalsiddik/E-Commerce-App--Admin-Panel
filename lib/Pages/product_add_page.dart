@@ -39,8 +39,13 @@ class _ProductAddPageState extends State<ProductAddPage> {
 
   TextEditingController productTitleController = TextEditingController();
   TextEditingController productPriceController = TextEditingController();
+  TextEditingController productAboutController = TextEditingController();
+  TextEditingController productColorController = TextEditingController();
+  TextEditingController productSizeController = TextEditingController();
 
   String? images;
+  List colorList = [];
+  List sizeList = [];
   sendImage() async {
     // var dataKye = DateTime.now().microsecond;
 
@@ -220,6 +225,78 @@ class _ProductAddPageState extends State<ProductAddPage> {
                               return null;
                             },
                           ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          CustomTextField(
+                            controller: productAboutController,
+                            hintText: "Product About ",
+                            maxLines: 3,
+                            field_height: 100,
+                            validator: (valueKey) {
+                              if (valueKey!.isEmpty) {
+                                return ("Enter Product About... ");
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              SizedBox(
+                                width: 150,
+                                child: CustomTextField(
+                                  controller: productColorController,
+                                  hintText: "Product Color ",
+                                ),
+                              ),
+                              ElevatedButton(
+                                style: const ButtonStyle(
+                                  backgroundColor: MaterialStatePropertyAll(
+                                    AllColors.primaryColor,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  colorList.add(productColorController.text);
+                                  productColorController.clear();
+                                },
+                                child: const Text(
+                                  "Add",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              SizedBox(
+                                width: 150,
+                                child: CustomTextField(
+                                  controller: productSizeController,
+                                  hintText: "Product Size ",
+                                ),
+                              ),
+                              ElevatedButton(
+                                style: const ButtonStyle(
+                                  backgroundColor: MaterialStatePropertyAll(
+                                    AllColors.primaryColor,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  colorList.add(productSizeController.text);
+                                  productSizeController.clear();
+                                },
+                                child: const Text(
+                                  "Add",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -242,6 +319,9 @@ class _ProductAddPageState extends State<ProductAddPage> {
                         productIDController.clear();
                         productPriceController.clear();
                         productTitleController.clear();
+                        productColorController.clear();
+                        productAboutController.clear();
+                        productSizeController.clear();
 
                         image = null;
                       },
@@ -268,7 +348,13 @@ class _ProductAddPageState extends State<ProductAddPage> {
                             )
                             .set(
                               ProductModel(
-                                size: ["1", "2", "3"],
+                                size: sizeList.isNotEmpty == true
+                                    ? sizeList
+                                    : [productSizeController.text],
+                                color: colorList.isNotEmpty == true
+                                    ? colorList
+                                    : [productColorController.text],
+                                about: productAboutController.text,
                                 title: productTitleController.text,
                                 image: images,
                                 price: int.parse(productPriceController.text),
@@ -282,6 +368,11 @@ class _ProductAddPageState extends State<ProductAddPage> {
                         productIDController.clear();
                         productPriceController.clear();
                         productTitleController.clear();
+                        productColorController.clear();
+                        productAboutController.clear();
+                        productSizeController.clear();
+                        colorList.clear();
+                        sizeList.clear();
 
                         image = null;
 
