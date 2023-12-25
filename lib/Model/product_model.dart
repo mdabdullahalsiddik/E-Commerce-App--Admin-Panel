@@ -5,6 +5,7 @@ class ProductModel {
   String? image;
   String? about;
   int? quantity;
+  // ignore: prefer_typing_uninitialized_variables
   var price;
 
   String? id;

@@ -12,12 +12,13 @@ class CustomTextField extends StatefulWidget {
   Widget? suffixIcon;
   Widget? prefixIcon;
   int? maxLines;
+  // ignore: non_constant_identifier_names
   double? field_height;
   String? Function(String?)? validator;
   TextEditingController? controller;
   TextInputType? keyboardType;
   CustomTextField({
-    Key? key,
+    super.key,
     this.obscureText,
     this.textInputAction,
     this.onChanged,
@@ -25,11 +26,12 @@ class CustomTextField extends StatefulWidget {
     this.suffixIcon,
     this.prefixIcon,
     this.maxLines,
+    // ignore: non_constant_identifier_names
     this.field_height,
     this.validator,
     this.controller,
     this.keyboardType,
-  }) : super(key: key);
+  });
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();

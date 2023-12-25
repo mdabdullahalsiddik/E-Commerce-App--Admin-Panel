@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:e_shop_admin/Funcition/firebase_funcition.dart';
 import 'package:e_shop_admin/Model/category_model.dart';
 import 'package:e_shop_admin/Pages/product_add_page.dart';
@@ -10,7 +9,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:image_picker/image_picker.dart';
 
 class HomePage extends StatefulWidget {
@@ -290,6 +288,7 @@ class _HomePageState extends State<HomePage> {
                             id: categoryIdController.text,
                           ).toJson(),
                         );
+                    // ignore: use_build_context_synchronously
                     Navigator.pop(context, false);
                     categoryController.clear();
                     categoryIdController.clear();

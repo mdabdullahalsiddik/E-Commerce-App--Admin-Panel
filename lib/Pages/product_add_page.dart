@@ -1,19 +1,14 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:convert';
 import 'dart:io';
-
 import 'package:e_shop_admin/Widget/custom_elevataed_button.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:image_picker/image_picker.dart';
-
 import 'package:e_shop_admin/Funcition/firebase_funcition.dart';
 import 'package:e_shop_admin/Model/product_model.dart';
-
 import 'package:e_shop_admin/Static/all_colors.dart';
 import 'package:e_shop_admin/Widget/costom_textfield.dart';
 

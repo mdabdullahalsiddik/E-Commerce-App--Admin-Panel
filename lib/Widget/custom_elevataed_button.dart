@@ -15,7 +15,7 @@ class CustomElevatedButton extends StatelessWidget {
   final List sizeList;
 
   void Function()? onPressed;
-  var color;
+  Color color;
   void Function()? onLongPress;
 
   @override
