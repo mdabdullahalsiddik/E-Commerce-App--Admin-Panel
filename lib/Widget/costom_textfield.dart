@@ -15,8 +15,9 @@ class CustomTextField extends StatefulWidget {
   double? field_height;
   String? Function(String?)? validator;
   TextEditingController? controller;
+  TextInputType? keyboardType;
   CustomTextField({
-    super.key,
+    Key? key,
     this.obscureText,
     this.textInputAction,
     this.onChanged,
@@ -27,7 +28,8 @@ class CustomTextField extends StatefulWidget {
     this.field_height,
     this.validator,
     this.controller,
-  });
+    this.keyboardType,
+  }) : super(key: key);
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -39,6 +41,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return SizedBox(
       height: widget.field_height ?? 60,
       child: TextFormField(
+        keyboardType: widget.keyboardType ?? TextInputType.text,
         maxLines: widget.maxLines ?? 1,
         textInputAction: widget.textInputAction ?? TextInputAction.next,
         controller: widget.controller,

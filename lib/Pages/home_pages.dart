@@ -7,7 +7,10 @@ import 'package:e_shop_admin/Static/all_colors.dart';
 import 'package:e_shop_admin/Widget/costom_textfield.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:image_picker/image_picker.dart';
 
 class HomePage extends StatefulWidget {
@@ -54,90 +57,115 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: AllColors.primaryColor,
         onPressed: () {
-          _showDialog(context);
+          setState(() {
+            _showDialog(context);
+          });
         },
         child: const Icon(
           Icons.add,
         ),
       ),
-      body: FutureBuilder(
-        future: FirebaseGetData().categoryGetData(),
+      body: StreamBuilder(
+        stream: FirebaseGetData().categoryGetData().asStream(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return StatefulBuilder(
-              builder: (context, setState) {
-                return GridView.builder(
-                  shrinkWrap: true,
-                  itemCount: snapshot.data!.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 1,
-                  ),
-                  itemBuilder: (context, index) {
-                    // var data = snapshot.data!.snapshot.children.elementAt(index);
-                    var data = snapshot.data![index];
-                    return InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (BuildContext context) => ProductAddPage(
-                              categoryTitle: data.title,
-                              categoryID: data.id,
-                            ),
-                          ),
-                        );
-                      },
-                      onDoubleTap: () {
-                        setState(() {
-                          FirebaseDatabase.instance
-                              .ref("Category")
-                              .child(data.title.toString().toLowerCase())
-                              .remove();
-                          FirebaseDatabase.instance
-                              .ref("Product")
-                              .child(data.title.toString())
-                              .remove();
-                          FirebaseStorage.instance
-                              .ref("Category")
-                              .child(
-                                "${categoryController.text}_${categoryIdController.text}",
-                              )
-                              .delete();
-                          FirebaseStorage.instance
-                              .ref("Product")
-                              .child(data.title.toString())
-                              .delete();
-                        });
-                      },
-                      child: Card(
-                        color: AllColors.primaryColor,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CircleAvatar(
-                                radius: 30,
-                                backgroundImage: NetworkImage(
-                                  data.image.toString(),
-                                ),
-                              ),
-                              Text(
-                                "Category Name : ${data.title.toString()}",
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                "Category ID : ${data.id.toString()}",
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
+            return GridView.builder(
+              shrinkWrap: true,
+              itemCount: snapshot.data!.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 1,
+              ),
+              itemBuilder: (context, index) {
+                // var data = snapshot.data!.snapshot.children.elementAt(index);
+                var data = snapshot.data![index];
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => ProductAddPage(
+                          categoryTitle: data.title,
+                          categoryID: data.id,
                         ),
                       ),
                     );
                   },
+                  onLongPress: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return CupertinoAlertDialog(
+                          title: const Text(
+                            "Delete Category?",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                          content: const Text("Are you sure?"),
+                          actions: [
+                            CupertinoDialogAction(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text("No"),
+                            ),
+                            CupertinoDialogAction(
+                                onPressed: () async {
+                                  await EasyLoading.show(status: 'loading...');
+                                  setState(() {
+                                    FirebaseDatabase.instance
+                                        .ref("Category")
+                                        .child(
+                                            data.title.toString().toLowerCase())
+                                        .remove();
+                                    FirebaseDatabase.instance
+                                        .ref("Product")
+                                        .child(data.title.toString())
+                                        .remove();
+                                    FirebaseStorage.instance
+                                        .ref("Category")
+                                        .child(
+                                          "${categoryController.text}_${categoryIdController.text}",
+                                        )
+                                        .delete();
+                                    FirebaseStorage.instance
+                                        .ref("Product")
+                                        .child(data.title.toString())
+                                        .delete();
+                                    Navigator.pop(context);
+                                  });
+                                  EasyLoading.showSuccess('Great Success!');
+                                  EasyLoading.dismiss();
+                                },
+                                child: const Text("Yes")),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: Card(
+                    color: AllColors.primaryColor,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 30,
+                            backgroundImage: NetworkImage(
+                              data.image.toString(),
+                            ),
+                          ),
+                          Text(
+                            "Category Name : ${data.title.toString()}",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            "Category ID : ${data.id.toString()}",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 );
               },
             );
@@ -207,6 +235,7 @@ class _HomePageState extends State<HomePage> {
                           CustomTextField(
                             controller: categoryIdController,
                             hintText: "Category ID",
+                            keyboardType: TextInputType.number,
                             validator: (valueKey) {
                               if (valueKey!.isEmpty) {
                                 return ("Enter Category Id");
@@ -222,68 +251,76 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             actions: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ElevatedButton(
-                      style: const ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll(
-                          AllColors.primaryColor,
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context, false);
-                        categoryController.clear();
-                        categoryIdController.clear();
-                        image = null;
-                      },
-                      child: const Text(
-                        "No",
-                        style: TextStyle(color: Colors.black),
-                      )),
-                  ElevatedButton(
-                    style: const ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(
-                        AllColors.primaryColor,
-                      ),
-                    ),
-                    onPressed: () async {
-                      if (formKey.currentState!.validate()) {
-                        await sendImage();
-                        await FirebaseDatabase.instance
-                            .ref("Category")
-                            .child(
-                              categoryController.text.toLowerCase(),
-                            )
-                            .set(
-                              CategoryModel(
-                                title: categoryController.text,
-                                image: images,
-                                id: categoryIdController.text,
-                              ).toJson(),
-                            );
-                        Navigator.pop(context, false);
-                        categoryController.clear();
-                        categoryIdController.clear();
-                        image = null;
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              "Fill all the field",
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                    child: const Text(
-                      "Yes",
-                      style: TextStyle(
-                        color: Colors.black,
-                      ),
+              ElevatedButton(
+                  style: const ButtonStyle(
+                    backgroundColor: MaterialStatePropertyAll(
+                      AllColors.primaryColor,
                     ),
                   ),
-                ],
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                    categoryController.clear();
+                    categoryIdController.clear();
+                    image = null;
+                  },
+                  child: const Text(
+                    "No",
+                    style: TextStyle(color: Colors.black),
+                  )),
+              ElevatedButton(
+                style: const ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll(
+                    AllColors.primaryColor,
+                  ),
+                ),
+                onPressed: () async {
+                  if (formKey.currentState!.validate()) {
+                    setState(() {});
+                    await EasyLoading.show(status: 'loading...');
+                    await sendImage();
+                    await FirebaseDatabase.instance
+                        .ref("Category")
+                        .child(
+                          categoryController.text.toLowerCase(),
+                        )
+                        .set(
+                          CategoryModel(
+                            title: categoryController.text,
+                            image: images,
+                            id: categoryIdController.text,
+                          ).toJson(),
+                        );
+                    Navigator.pop(context, false);
+                    categoryController.clear();
+                    categoryIdController.clear();
+                    image = null;
+                    Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    const HomePage(),
+                              ),
+                            );
+                    EasyLoading.showSuccess('Great Success!');
+
+                    EasyLoading.dismiss();
+                  } else {
+                    EasyLoading.showError('Failed with Error');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          "Fill all the field",
+                        ),
+                      ),
+                    );
+                  }
+                },
+                child: const Text(
+                  "Yes",
+                  style: TextStyle(
+                    color: Colors.black,
+                  ),
+                ),
               )
             ],
           );
