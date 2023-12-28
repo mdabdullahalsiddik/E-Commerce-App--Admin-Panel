@@ -119,22 +119,26 @@ class _ProductAddPageState extends State<ProductAddPage> {
                             ),
                             CupertinoDialogAction(
                                 onPressed: () async {
-                                  await EasyLoading.show(status: 'loading...');
-
-                                  setState(() {
-                                    FirebaseDatabase.instance
-                                        .ref("Product")
-                                        .child(widget.categoryTitle.toString())
-                                        .child(data.id.toString())
-                                        .remove();
-                                    // FirebaseStorage.instance
-                                    //     .ref("Product")
-                                    //     .child(data.id.toString())
-                                    //     .delete();
-                                    Navigator.pop(context);
-                                  });
-                                  EasyLoading.showSuccess('Great Success!');
-                                  EasyLoading.dismiss();
+                                  try {
+                                    await EasyLoading.show(
+                                        status: 'loading...');
+                                    setState(() {
+                                      FirebaseDatabase.instance
+                                          .ref("Product")
+                                          .child(widget.categoryTitle.toString())
+                                          .child(data.id.toString())
+                                          .remove();
+                                      // FirebaseStorage.instance
+                                      //     .ref("Product")
+                                      //     .child(data.id.toString())
+                                      //     .delete();
+                                      Navigator.pop(context);
+                                    });
+                                    EasyLoading.showSuccess('Great Success!');
+                                    EasyLoading.dismiss();
+                                  } catch (e) {
+                                    print(e);
+                                  }
                                 },
                                 child: const Text("Yes")),
                           ],
@@ -598,47 +602,52 @@ class _ProductAddPageState extends State<ProductAddPage> {
                 ),
                 onPressed: () async {
                   if (formKey.currentState!.validate()) {
-                    setState(() {});
-                    await EasyLoading.show(status: 'loading...');
+                    try {
+                      await EasyLoading.show(status: 'loading...');
+                      await sendImage();
+                      await FirebaseDatabase.instance
+                          .ref("Product")
+                          .child(
+                            widget.categoryTitle.toString(),
+                          )
+                          .child(
+                            productIDController.text.toLowerCase(),
+                          )
+                          .set(
+                            ProductModel(
+                              size: sizeList.isNotEmpty == true
+                                  ? sizeList
+                                  : [productSizeController.text],
+                              color: colorList.isNotEmpty == true
+                                  ? colorList
+                                  : [""],
+                              about: productAboutController.text,
+                              title: productTitleController.text,
+                              image: images,
+                              price: int.parse(productPriceController.text),
+                              id: productIDController.text,
+                              quantity: 1,
+                              categoryID: widget.categoryID,
+                            ).toJson(),
+                          );
+                      setState(() {
+                        Navigator.pop(context);
+                        productIDController.clear();
+                        productPriceController.clear();
+                        productTitleController.clear();
+                        productAboutController.clear();
+                        productSizeController.clear();
+                        sizeList.clear();
+                        colorList.clear();
+                        image = null;
+                        productIDController.clear();
+                      });
 
-                    await sendImage();
-                    await FirebaseDatabase.instance
-                        .ref("Product")
-                        .child(
-                          widget.categoryTitle.toString(),
-                        )
-                        .child(
-                          productIDController.text.toLowerCase(),
-                        )
-                        .set(
-                          ProductModel(
-                            size: sizeList.isNotEmpty == true
-                                ? sizeList
-                                : [productSizeController.text],
-                            color:
-                                colorList.isNotEmpty == true ? colorList : [""],
-                            about: productAboutController.text,
-                            title: productTitleController.text,
-                            image: images,
-                            price: int.parse(productPriceController.text),
-                            id: productIDController.text,
-                            quantity: 1,
-                            categoryID: widget.categoryID,
-                          ).toJson(),
-                        );
-                    // ignore: use_build_context_synchronously
-                    Navigator.pop(context);
-                    productIDController.clear();
-                    productPriceController.clear();
-                    productTitleController.clear();
-                    productAboutController.clear();
-                    productSizeController.clear();
-                    sizeList.clear();
-                    colorList.clear();
-                    image = null;
-                    productIDController.clear();
-                    EasyLoading.showSuccess('Great Success!');
-                    EasyLoading.dismiss();
+                      EasyLoading.showSuccess('Great Success!');
+                      EasyLoading.dismiss();
+                    } catch (e) {
+                      print(e);
+                    }
                   } else {
                     EasyLoading.showError('Failed with Error');
                     ScaffoldMessenger.of(context).showSnackBar(

@@ -43,6 +43,7 @@ dependencies:
   firebase_database: ^10.3.5
   image_picker: ^1.0.4
   flutter_easyloading: ^3.0.5
+  pie_chart: ^5.4.0
 
 dev_dependencies:
   flutter_test:

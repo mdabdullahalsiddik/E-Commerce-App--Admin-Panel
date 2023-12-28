@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   var formKey = GlobalKey<FormState>();
-  TextEditingController categoryController = TextEditingController();
+  TextEditingController categoryNameController = TextEditingController();
   TextEditingController categoryIdController = TextEditingController();
 
   String? images;
@@ -39,7 +39,7 @@ class _HomePageState extends State<HomePage> {
           "Category",
         )
         .child(
-          "${categoryController.text}_${categoryIdController.text}",
+          "${categoryNameController.text}_${categoryIdController.text}",
         )
         .putFile(File(image!.path));
     images = await imagePath.ref.getDownloadURL();
@@ -122,7 +122,7 @@ class _HomePageState extends State<HomePage> {
                                     FirebaseStorage.instance
                                         .ref("Category")
                                         .child(
-                                          "${categoryController.text}_${categoryIdController.text}",
+                                          "${categoryNameController.text}_${categoryIdController.text}",
                                         )
                                         .delete();
                                     FirebaseStorage.instance
@@ -218,7 +218,7 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         children: [
                           CustomTextField(
-                            controller: categoryController,
+                            controller: categoryNameController,
                             hintText: "Category Name",
                             validator: (valueKey) {
                               if (valueKey!.isEmpty) {
@@ -257,7 +257,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   onPressed: () {
                     Navigator.pop(context, false);
-                    categoryController.clear();
+                    categoryNameController.clear();
                     categoryIdController.clear();
                     image = null;
                   },
@@ -279,27 +279,21 @@ class _HomePageState extends State<HomePage> {
                     await FirebaseDatabase.instance
                         .ref("Category")
                         .child(
-                          categoryController.text.toLowerCase(),
+                          categoryNameController.text.toLowerCase(),
                         )
                         .set(
                           CategoryModel(
-                            title: categoryController.text,
+                            title: categoryNameController.text,
                             image: images,
                             id: categoryIdController.text,
                           ).toJson(),
                         );
                     // ignore: use_build_context_synchronously
                     Navigator.pop(context, false);
-                    categoryController.clear();
+                    categoryNameController.clear();
                     categoryIdController.clear();
                     image = null;
-                    Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    const HomePage(),
-                              ),
-                            );
+
                     EasyLoading.showSuccess('Great Success!');
 
                     EasyLoading.dismiss();
